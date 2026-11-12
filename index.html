@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08090d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AURA TTS">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>AURA TTS Studio</title>
+</head>
+<body>
+  <div class="ambient a1"></div><div class="ambient a2"></div>
+  <header class="topbar">
+    <div class="brand"><div class="brandmark">A</div><div><strong>AURA</strong><span>TTS STUDIO</span></div></div>
+    <div class="top-actions"><span class="local-pill"><i></i> LOCAL</span><button class="icon-btn" id="settingsBtn" aria-label="Einstellungen">⚙</button></div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">PRIVATE VOICE WORKSPACE</div>
+      <h1>Your voice.<br><em>Your models.</em></h1>
+      <p>Lokales Voice Studio für deine eigenen Sprachmodelle.</p>
+      <div class="hero-stats"><div><b id="modelCount">0</b><span>MODELLE</span></div><div><b id="audioCount">0</b><span>AUDIODATEIEN</span></div><div><b id="storageState">READY</b><span>SPEICHER</span></div></div>
+    </section>
+
+    <nav class="tabs" aria-label="Hauptnavigation">
+      <button class="tab active" data-view="studio">Studio</button>
+      <button class="tab" data-view="models">Modelle</button>
+      <button class="tab" data-view="library">Audio Library</button>
+    </nav>
+
+    <section class="view active" id="view-studio">
+      <div class="section-head"><div><div class="eyebrow">01 / GENERATOR</div><h2>Voice Studio</h2></div><span class="tag">ENGINE SLOT</span></div>
+      <div class="glass panel">
+        <label for="textInput">Dein Text</label>
+        <textarea id="textInput" maxlength="12000" placeholder="Schreibe oder füge deinen Text hier ein …"></textarea>
+        <div class="field-foot"><span id="charCount">0 / 12000</span><button class="text-btn" id="clearText">Löschen</button></div>
+        <div class="control-grid">
+          <div><label for="language">Sprache</label><select id="language"><option value="de">Deutsch</option><option value="en">English</option><option value="tr">Türkçe</option></select></div>
+          <div><label for="modelSelect">TTS-Modell</label><select id="modelSelect"><option value="">Kein Modell registriert</option></select></div>
+        </div>
+        <div class="notice"><span>ⓘ</span><div><b>Engine noch nicht verbunden</b><p>Modelle können bereits importiert und lokal verwaltet werden. Für echte Sprachgenerierung muss ein kompatibler ONNX-Engine-Adapter installiert werden.</p></div></div>
+        <button class="primary-btn" id="generateBtn" disabled>✦ &nbsp; Sprache generieren <span>COMING NEXT</span></button>
+      </div>
+      <div class="section-head compact"><div><div class="eyebrow">02 / EXPORT</div><h2>Audio exportieren</h2></div></div>
+      <div class="glass export-card"><div class="export-icon">♫</div><div class="export-copy"><b>WAV Export</b><span>PCM WAV · 16-bit · Mono</span></div><button class="secondary-btn" id="demoWav">Test-WAV erstellen</button></div>
+      <p class="hint">Der Test-WAV ist ein kurzer Stille-/Signaltest zur Prüfung des Exports, keine KI-Sprachausgabe. MP3-Encoding wird in einem späteren Build ergänzt.</p>
+    </section>
+
+    <section class="view" id="view-models">
+      <div class="section-head"><div><div class="eyebrow">MODEL MANAGEMENT</div><h2>Deine Modelle</h2></div><span class="tag">ON-DEVICE</span></div>
+      <div class="glass import-zone">
+        <div class="upload-symbol">＋</div><h3>Modelle importieren</h3><p>Wähle Modellgewichte, Konfigurationen und Tokenizer aus der Dateien-App. Mehrere Dateien gleichzeitig sind möglich.</p>
+        <input id="modelFiles" type="file" multiple>
+        <label class="primary-btn file-label" for="modelFiles">Dateien auswählen</label>
+        <div class="formats">.onnx · .ort · .json · .txt · .model · .vocab · .bin · .safetensors*</div>
+        <p class="hint">* Safetensors werden gespeichert, aber noch nicht ausgeführt. Große Dateien benötigen ausreichend freien iPhone-Speicher.</p>
+      </div>
+      <div class="glass import-zone slim">
+        <h3>Komplettes Modellpaket</h3><p>Wenn iOS keinen Ordner direkt anbietet, komprimiere ihn in der Dateien-App als ZIP und importiere das Paket. ZIP-Entpacken folgt in einem späteren Build; aktuell Dateien einzeln auswählen.</p>
+        <span class="tag">ZIP IMPORT: NOT YET AVAILABLE</span>
+      </div>
+      <div class="section-head compact"><div><div class="eyebrow">LOCAL STORAGE</div><h2>Importierte Dateien</h2></div><button class="text-btn" id="refreshModels">Aktualisieren</button></div>
+      <div id="modelList" class="stack empty-state">Noch keine Dateien importiert.</div>
+    </section>
+
+    <section class="view" id="view-library">
+      <div class="section-head"><div><div class="eyebrow">YOUR OUTPUTS</div><h2>Audio Library</h2></div><span class="tag">LOCAL</span></div>
+      <div id="audioList" class="stack empty-state">Noch keine Audiodateien vorhanden.</div>
+    </section>
+  </main>
+  <footer><span>AURA TTS STUDIO</span><span>v0.1.0 · LOCAL-FIRST</span></footer>
+  <dialog id="settingsDialog" class="glass-dialog">
+    <form method="dialog"><div class="section-head"><h2>Einstellungen</h2><button class="icon-btn">✕</button></div>
+    <p>Alle importierten Dateien und Audioausgaben werden in IndexedDB dieses Browsers gespeichert. Löschen der Website-Daten kann sie entfernen.</p>
+    <button class="secondary-btn danger" id="clearAll" type="button">Lokale App-Daten löschen</button>
+    <p class="hint">Offline-Verfügbarkeit setzt voraus, dass die App einmal vollständig geladen und installiert wurde.</p></form>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
